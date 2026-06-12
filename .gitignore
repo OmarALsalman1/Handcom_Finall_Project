@@ -1,6 +1,7 @@
-F_Project/Lib/ 
-F_Project/Include/ 
-F_Project/Scripts/ 
-F_Project/Lib/ 
-F_Project/Include/ 
-F_Project/Scripts/ 
+# Python virtual environment (F_Project is the venv root)
+F_Project/Lib/
+F_Project/Include/
+F_Project/Scripts/
+F_Project/pyvenv.cfg
+F_Project/.pytest_cache/
+F_Project/.claude/
