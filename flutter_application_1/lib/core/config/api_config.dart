@@ -1,5 +1,11 @@
 class ApiConfig {
-  static const String baseUrl = 'http://10.0.2.2:8000/api/v1';
+  // Override at build/run time with:
+  //   flutter run --dart-define=API_BASE_URL=http://<host>:8000/api/v1
+  // Defaults to the Android emulator's loopback alias for the host machine.
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://10.0.2.2:8000/api/v1',
+  );
 
   static const String loginUser = '$baseUrl/auth/service-user/login/';
   static const String registerUser = '$baseUrl/auth/service-user/register/';

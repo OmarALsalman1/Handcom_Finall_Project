@@ -15,6 +15,10 @@
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
         
+        <!-- SECURITY: This key is committed to the repo. In Google Cloud Console,
+             restrict it to Android apps with this package name + the SHA-1
+             fingerprint(s) of your signing certificate(s) (debug and release),
+             and limit it to the Maps SDK for Android. -->
         <meta-data
     android:name="com.google.android.geo.API_KEY"
     android:value="AIzaSyAJHd9cxMXWkKSNz563v8ITw0nUBs9_jsQ"/>
