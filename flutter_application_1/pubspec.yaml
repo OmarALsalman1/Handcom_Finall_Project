@@ -1,0 +1,50 @@
+name: handcom
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  geolocator: ^13.0.1   # لجلب الإحداثيات
+  google_maps_flutter: ^2.9.0 # لعرض الخريطة
+  image_picker: ^1.1.2
+  permission_handler: ^12.0.1
+  record: ^6.2.0
+  path_provider: ^2.1.3
+  url_launcher: ^6.3.0
+  cupertino_icons: ^1.0.8
+  audioplayers: ^6.6.0
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+
+  # ✅ تم نقل مكتبة التوطين (الترجمة) هنا في الـ dependencies ليعمل التطبيق بدون مشاكل كراش
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # أدوات التطوير
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.3
+
+# إعدادات أيقونة التطبيق
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/handCom_icon.png.jpeg"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/handCom_icon.png.jpeg"
+
+flutter:
+  uses-material-design: true
+
+  # ✅ تم تنظيف مسار الأصول والصور ليتوافق مع معايير فلاتر الصارمة بدون مسافات أو نصوص تعليق
+  assets:
+    - assets/images/
