@@ -121,6 +121,7 @@ class RequestService {
     required String location,
     required String description,
     int? providerId,
+    String? scheduledFor,
   }) async {
     try {
       final body = <String, dynamic>{
@@ -129,6 +130,7 @@ class RequestService {
         'description': description,
       };
       if (providerId != null) body['provider_id'] = providerId;
+      if (scheduledFor != null) body['scheduled_for'] = scheduledFor;
 
       final response = await ApiService.post(
         ApiConfig.serviceRequests,

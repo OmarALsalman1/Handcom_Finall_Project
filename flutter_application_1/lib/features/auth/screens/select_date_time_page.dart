@@ -23,6 +23,7 @@ class _SelectDateTimePageState extends State<SelectDateTimePage> {
 
   late String selectedPeriod;
   late String selectedHourMinute;
+  late TimeOfDay _selectedTime;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _SelectDateTimePageState extends State<SelectDateTimePage> {
     initializeDateFormatting('ar_SA', null);
 
     final TimeOfDay currentTime = TimeOfDay.now();
+    _selectedTime = currentTime;
     selectedPeriod = currentTime.period == DayPeriod.am ? "am" : "pm";
 
     int hourInt = currentTime.hourOfPeriod == 0 ? 12 : currentTime.hourOfPeriod;
@@ -250,6 +252,7 @@ class _SelectDateTimePageState extends State<SelectDateTimePage> {
                         }
 
                         setState(() {
+                          _selectedTime = picked;
                           selectedPeriod = picked.period == DayPeriod.am
                               ? amFull
                               : pmFull;
@@ -301,7 +304,18 @@ class _SelectDateTimePageState extends State<SelectDateTimePage> {
                     onPressed: () {
                       final dateLabel = DateFormat('EEE، d MMM', 'ar_SA').format(_selectedDate);
                       final timeLabel = '$selectedHourMinute ${selectedPeriod == "am" ? "ص" : "م"}';
-                      Navigator.pop(context, {'date': dateLabel, 'time': timeLabel});
+                      final scheduledFor = DateTime(
+                        _selectedDate.year,
+                        _selectedDate.month,
+                        _selectedDate.day,
+                        _selectedTime.hour,
+                        _selectedTime.minute,
+                      );
+                      Navigator.pop(context, {
+                        'date': dateLabel,
+                        'time': timeLabel,
+                        'iso': scheduledFor.toIso8601String(),
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentOrange,

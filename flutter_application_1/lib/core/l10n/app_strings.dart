@@ -107,6 +107,9 @@ class AppStrings {
   String get orderLocationRequired => isAr
       ? 'الرجاء تحديد موقع الخدمة أولاً'
       : 'Please set the service location first';
+  String get orderTimeRequired => isAr
+      ? 'الرجاء تحديد وقت الخدمة أولاً'
+      : 'Please set the service time first';
   String get orderSentSuccess => isAr ? 'تم إرسال طلبك بنجاح ✅' : 'Order sent successfully ✅';
   String get orderSentFailed => isAr ? 'فشل إرسال الطلب. حاول مجدداً' : 'Failed to send order. Please try again.';
 

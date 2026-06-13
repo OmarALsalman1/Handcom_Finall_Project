@@ -41,6 +41,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   String _locationAddress = '';
   String _selectedDateLabel = '';
   String _selectedTimeLabel = '';
+  String? _scheduledForIso;
 
 
   @override
@@ -94,6 +95,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                           setState(() {
                             _selectedDateLabel = result['date'] ?? '';
                             _selectedTimeLabel = result['time'] ?? '';
+                            _scheduledForIso = result['iso'];
                           });
                         }
                       }, textColor),
@@ -412,12 +414,22 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
   Future<void> _submitOrder(BuildContext context) async {
     final locationMsg = context.l10n.orderLocationRequired;
+    final timeMsg = context.l10n.orderTimeRequired;
     final successMsg = context.l10n.orderSentSuccess;
     final failedMsg = context.l10n.orderSentFailed;
 
     if (_pickedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(locationMsg, textAlign: TextAlign.center),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+
+    if (_scheduledForIso == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(timeMsg, textAlign: TextAlign.center),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));
@@ -433,6 +445,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       location: _locationAddress,
       description: '',
       providerId: widget.providerId,
+      scheduledFor: _scheduledForIso,
     );
 
     if (!mounted) return;

@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 import pytest
+from django.utils import timezone
+
 from apps.services.models import ServiceRequest, Service, ServiceRequestStatusTracking
 
 SR_URL = '/api/v1/service-requests/'
@@ -77,3 +81,43 @@ class TestServiceRequestLifecycle:
             'location': 'Amman',
         })
         assert r.status_code == 403
+
+    def test_cannot_double_book_provider_within_two_hours(self, user_client, create_provider):
+        provider = create_provider(email='busy.plumber@test.com')
+        slot = timezone.now() + timedelta(days=1)
+
+        r1 = user_client.post(SR_URL, {
+            'service_type': 'plumbing',
+            'location': 'Amman',
+            'provider_id': provider.service_provider_id,
+            'scheduled_for': slot.isoformat(),
+        })
+        assert r1.status_code == 201
+
+        r2 = user_client.post(SR_URL, {
+            'service_type': 'plumbing',
+            'location': 'Amman',
+            'provider_id': provider.service_provider_id,
+            'scheduled_for': (slot + timedelta(hours=1)).isoformat(),
+        })
+        assert r2.status_code == 400
+
+    def test_can_book_provider_outside_two_hour_window(self, user_client, create_provider):
+        provider = create_provider(email='free.plumber@test.com')
+        slot = timezone.now() + timedelta(days=1)
+
+        r1 = user_client.post(SR_URL, {
+            'service_type': 'plumbing',
+            'location': 'Amman',
+            'provider_id': provider.service_provider_id,
+            'scheduled_for': slot.isoformat(),
+        })
+        assert r1.status_code == 201
+
+        r2 = user_client.post(SR_URL, {
+            'service_type': 'plumbing',
+            'location': 'Amman',
+            'provider_id': provider.service_provider_id,
+            'scheduled_for': (slot + timedelta(hours=3)).isoformat(),
+        })
+        assert r2.status_code == 201
