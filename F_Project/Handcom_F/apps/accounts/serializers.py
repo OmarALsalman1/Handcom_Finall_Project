@@ -194,10 +194,13 @@ class ServiceProviderProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ('service_provider_id', 'email', 'created_at')
 
     def get_average_rating(self, obj):
-        qs = obj.received_ratings.all()
-        if not qs.exists():
-            return None
-        return round(sum(r.rating_value for r in qs) / qs.count(), 2)
+        from apps.ratings.services import category_or_overall_rating
+
+        avg, _ = category_or_overall_rating(obj, self.context.get('category'))
+        return avg
 
     def get_total_ratings(self, obj):
-        return obj.received_ratings.count()
+        from apps.ratings.services import category_or_overall_rating
+
+        _, total = category_or_overall_rating(obj, self.context.get('category'))
+        return total

@@ -280,9 +280,17 @@ class ServiceProviderListView(generics.ListAPIView):
             qs = qs.filter(service_categories__icontains=f'"{category}"')
         return qs
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['category'] = self.request.query_params.get('category')
+        return context
+
     def list(self, request, *args, **kwargs):
+        from apps.ratings.services import category_or_overall_rating
+
         qs = self.get_queryset()
         providers = list(qs)
+        category = request.query_params.get('category')
 
         # Parse optional user coordinates
         try:
@@ -303,9 +311,8 @@ class ServiceProviderListView(generics.ListAPIView):
             avail = _AVAILABILITY_RANK.get(p.availability_status, 99)
 
             # 3) rating (higher is better → negate)
-            ratings = p.received_ratings.all()
-            avg = (sum(r.rating_value for r in ratings) / len(ratings)
-                   if ratings else 0.0)
+            avg, _ = category_or_overall_rating(p, category)
+            avg = avg or 0.0
 
             return (dist, avail, -avg)
 

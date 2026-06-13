@@ -48,3 +48,19 @@ class RatingService:
             rating_value=rating_value,
             rating_comment=rating_comment or '',
         )
+
+
+def category_or_overall_rating(provider, category=None):
+    """Return (average, total) for a provider's received ratings.
+
+    If `category` is given and the provider has ratings for that category,
+    only those are used; otherwise falls back to all of the provider's ratings.
+    """
+    ratings = list(provider.received_ratings.all())
+    if category:
+        cat_ratings = [r for r in ratings if r.service_category == category]
+        if cat_ratings:
+            ratings = cat_ratings
+    if not ratings:
+        return None, 0
+    return round(sum(r.rating_value for r in ratings) / len(ratings), 2), len(ratings)
