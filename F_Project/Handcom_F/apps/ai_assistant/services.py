@@ -715,12 +715,20 @@ class ProviderRecommender:
 
         results = []
         for sp in candidates:
-            # Prefer the provider's track record in this category; fall back to
-            # their overall rating if they have no ratings for it yet.
+            # Displayed rating reflects this category only — no ratings yet
+            # for this category should show as "no ratings", not borrow
+            # from the provider's other categories.
             if sp.cat_rating_count:
-                avg, total = sp.cat_avg_rating or 0.0, sp.cat_rating_count
+                display_avg, display_total = sp.cat_avg_rating, sp.cat_rating_count
             else:
-                avg, total = sp.overall_avg_rating or 0.0, sp.overall_rating_count
+                display_avg, display_total = None, 0
+
+            # For ranking, fall back to the provider's overall rating when
+            # they have no track record in this category yet.
+            if sp.cat_rating_count:
+                sort_avg = sp.cat_avg_rating or 0.0
+            else:
+                sort_avg = sp.overall_avg_rating or 0.0
 
             if has_location and sp.latitude is not None and sp.longitude is not None:
                 distance_km = _haversine_km(user_lat, user_lng, sp.latitude, sp.longitude)
@@ -733,11 +741,11 @@ class ProviderRecommender:
                 'experience_years': sp.experience_years,
                 'availability_status': sp.availability_status,
                 'service_categories': sp.service_categories,
-                'average_rating': round(avg, 2) if total else None,
-                'total_ratings': total,
+                'average_rating': round(display_avg, 2) if display_total else None,
+                'total_ratings': display_total,
                 'distance_km': round(distance_km, 1) if distance_km is not None else None,
                 '_sort_distance': distance_km if distance_km is not None else float('inf'),
-                '_sort_rating': avg,
+                '_sort_rating': sort_avg,
             })
 
         # Service type is already guaranteed by the DB filter above (tier 1).

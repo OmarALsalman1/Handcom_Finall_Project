@@ -49,19 +49,19 @@ class TestProviderRatingByCategory:
         assert entry['average_rating'] == 1.0
         assert entry['total_ratings'] == 1
 
-    def test_list_falls_back_to_overall_when_no_category_ratings(self, api_client, create_provider):
+    def test_list_shows_no_rating_for_category_without_ratings(self, api_client, create_provider):
         provider = create_provider(
             email='fallback@cat.test', service_categories=['plumbing', 'painting'],
         )
         _add_rating(provider, 'u1@fb.test', '+962791111113', 'plumbing', 5, 'plumbing')
         _add_rating(provider, 'u2@fb.test', '+962791111114', 'plumbing', 1, 'plumbing')
 
-        # No ratings for 'painting' yet — should fall back to overall average
+        # No ratings for 'painting' yet — must NOT borrow the plumbing average
         r = api_client.get(f'{LIST_URL}?category=painting')
         assert r.status_code == 200
         entry = next(p for p in r.data if p['service_provider_id'] == provider.service_provider_id)
-        assert entry['average_rating'] == 3.0
-        assert entry['total_ratings'] == 2
+        assert entry['average_rating'] is None
+        assert entry['total_ratings'] == 0
 
     def test_detail_returns_overall_average(self, api_client, create_provider):
         provider = create_provider(

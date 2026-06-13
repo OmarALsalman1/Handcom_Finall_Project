@@ -50,16 +50,17 @@ class RatingService:
         )
 
 
-def category_or_overall_rating(provider, category=None):
+def category_or_overall_rating(provider, category=None, fallback=True):
     """Return (average, total) for a provider's received ratings.
 
-    If `category` is given and the provider has ratings for that category,
-    only those are used; otherwise falls back to all of the provider's ratings.
+    If `category` is given, only ratings for that category are considered.
+    When `fallback` is True and the provider has no ratings for that category,
+    falls back to all of the provider's ratings instead of returning empty.
     """
     ratings = list(provider.received_ratings.all())
     if category:
         cat_ratings = [r for r in ratings if r.service_category == category]
-        if cat_ratings:
+        if cat_ratings or not fallback:
             ratings = cat_ratings
     if not ratings:
         return None, 0

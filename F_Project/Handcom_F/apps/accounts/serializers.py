@@ -196,11 +196,11 @@ class ServiceProviderProfileSerializer(serializers.ModelSerializer):
     def get_average_rating(self, obj):
         from apps.ratings.services import category_or_overall_rating
 
-        avg, _ = category_or_overall_rating(obj, self.context.get('category'))
+        avg, _ = category_or_overall_rating(obj, self.context.get('category'), fallback=False)
         return avg
 
     def get_total_ratings(self, obj):
         from apps.ratings.services import category_or_overall_rating
 
-        _, total = category_or_overall_rating(obj, self.context.get('category'))
+        _, total = category_or_overall_rating(obj, self.context.get('category'), fallback=False)
         return total
