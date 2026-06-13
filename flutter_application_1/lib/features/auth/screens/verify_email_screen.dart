@@ -30,7 +30,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   static const Color primaryBlue = Color(0xFF1A3D81);
   static const Color accentOrange = Color(0xFFF58220);
-  static const int _otpTtl = 30;
+  static const int _otpTtl = 300; // 5 minutes
 
   int _secondsLeft = _otpTtl;
   bool _expired = false;
@@ -283,7 +283,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
-                                          '0:${_secondsLeft.toString().padLeft(2, '0')}',
+                                          '${_secondsLeft ~/ 60}:${(_secondsLeft % 60).toString().padLeft(2, '0')}',
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,

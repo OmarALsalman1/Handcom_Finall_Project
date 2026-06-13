@@ -8,7 +8,7 @@ from .models import PasswordResetOTP
 
 
 class OTPService:
-    TTL_SECONDS = 30
+    TTL_SECONDS = 300
 
     def send(self, email: str, role: str, purpose: str = 'reset') -> str:
         code = ''.join(random.choices(string.digits, k=6))
