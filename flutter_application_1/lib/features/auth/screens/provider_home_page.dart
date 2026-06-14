@@ -12,6 +12,7 @@ import 'package:handcom/providers/user_auth_provider.dart';
 import 'package:handcom/services/api_service.dart';
 import 'package:handcom/services/notification_service.dart';
 import 'package:handcom/services/request_service.dart';
+import 'package:handcom/shared/widgets/list_error_state.dart';
 import 'package:handcom/shared/widgets/theme_provider.dart';
 
 import 'provider_profile_page.dart';
@@ -31,6 +32,7 @@ class _ProviderHomePageState extends State<ProviderHomePage> {
 
   List<ServiceRequestModel> _orders = [];
   bool _loadingOrders = true;
+  String? _ordersErrorCode;
   String _providerName = '';
   int _unreadCount = 0;
 
@@ -60,10 +62,11 @@ class _ProviderHomePageState extends State<ProviderHomePage> {
     } catch (_) {}
 
     // Fetch accepted/in-progress jobs for the home page
-    final orders = await RequestService.getMyRequests();
+    final result = await RequestService.getMyRequests();
     if (!mounted) return;
     setState(() {
-      _orders = orders;
+      _orders = result.items;
+      _ordersErrorCode = result.errorCode;
       _loadingOrders = false;
     });
   }
@@ -263,6 +266,16 @@ class _ProviderHomePageState extends State<ProviderHomePage> {
     }
 
     if (_orders.isEmpty) {
+      if (_ordersErrorCode != null) {
+        return Padding(
+          padding: const EdgeInsets.all(30),
+          child: ListErrorState(
+            errorCode: _ordersErrorCode,
+            onRetry: _loadProviderData,
+            textColor: subTextColor,
+          ),
+        );
+      }
       return Padding(
         padding: const EdgeInsets.all(30),
         child: Center(

@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final passwordChangedSuccess = context.l10n.passwordChangedSuccess;
-    final invalidCode = context.l10n.invalidCode;
+    final l10n = context.l10n;
 
     final result = await AuthService.confirmPasswordReset(
       email: widget.email,
@@ -67,8 +67,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
     } else {
       messenger.showSnackBar(SnackBar(
-        content:
-            Text(result.error ?? invalidCode, textAlign: TextAlign.center),
+        content: Text(
+            l10n.errorMessage(result.errorCode, fallback: result.error),
+            textAlign: TextAlign.center),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));

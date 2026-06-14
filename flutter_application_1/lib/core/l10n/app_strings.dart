@@ -360,6 +360,86 @@ class AppStrings {
   // ── Select date/time ──────────────────────────────────────────────────────
   String get amFull => isAr ? 'صباحاً' : 'AM';
   String get pmFull => isAr ? 'مساءً' : 'PM';
+
+  // ── Error codes ────────────────────────────────────────────────────────────
+  /// Maps a stable backend `code` (or an `ApiException.code` like
+  /// `TIMEOUT`/`NETWORK_ERROR`) to a localized, specific message. Falls back
+  /// to [fallback] (typically the backend's raw `detail` text) for unmapped
+  /// codes, and finally to a generic message.
+  String errorMessage(String? code, {String? fallback}) {
+    switch (code) {
+      case 'TIMEOUT':
+        return isAr
+            ? 'استغرق الاتصال وقتاً طويلاً. تحقق من اتصالك وحاول مجدداً.'
+            : 'The request took too long. Check your connection and try again.';
+      case 'NETWORK_ERROR':
+        return isAr
+            ? 'تعذّر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.'
+            : 'Could not reach the server. Check your internet connection.';
+      case 'email_not_verified':
+        return isAr
+            ? 'البريد الإلكتروني غير مفعّل. تحقق من صندوق البريد الوارد لرمز التفعيل.'
+            : 'Your email is not verified yet. Check your inbox for the verification code.';
+      case 'invalid_credentials':
+      case 'authentication_failed':
+        return isAr ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' : 'Incorrect email or password.';
+      case 'email_already_exists':
+        return isAr
+            ? 'يوجد حساب مسجّل بهذا البريد الإلكتروني مسبقاً.'
+            : 'An account with this email already exists.';
+      case 'otp_expired':
+        return isAr ? 'انتهت صلاحية رمز التحقق. اطلب رمزاً جديداً.' : 'This code has expired. Request a new one.';
+      case 'otp_invalid':
+        return isAr ? 'رمز التحقق غير صحيح.' : 'Invalid verification code.';
+      case 'account_not_found':
+        return isAr ? 'لا يوجد حساب مرتبط بهذا البريد الإلكتروني.' : 'No account found for this email.';
+      case 'provider_not_found':
+        return isAr
+            ? 'مزود الخدمة المختار غير متاح حالياً.'
+            : 'The selected provider is no longer available.';
+      case 'schedule_conflict':
+        return isAr
+            ? 'يوجد لدى هذا المزود طلب آخر في هذا الوقت تقريباً. الرجاء اختيار وقت مختلف.'
+            : 'This provider already has a booking around that time. Please choose a different time.';
+      case 'service_not_found':
+        return isAr ? 'الخدمة غير موجودة.' : 'Service not found.';
+      case 'service_not_completed':
+        return isAr ? 'يمكنك تقييم الخدمة بعد اكتمالها فقط.' : 'You can only rate a completed service.';
+      case 'not_service_owner':
+        return isAr ? 'يمكنك تقييم الخدمات التي طلبتها أنت فقط.' : 'You can only rate services you requested.';
+      case 'rating_window_expired':
+        return isAr
+            ? 'انتهت فترة السماح لتقييم هذه الخدمة.'
+            : 'The rating window for this service has expired.';
+      case 'already_rated':
+        return isAr ? 'لقد قيّمت هذه الخدمة من قبل.' : 'You already rated this service.';
+      case 'email_send_failed':
+        return isAr
+            ? 'تعذّر إرسال البريد الإلكتروني. حاول مرة أخرى لاحقاً.'
+            : 'Could not send the email. Please try again later.';
+      case 'no_analysis_found':
+        return isAr
+            ? 'لا يوجد تحليل لهذه المحادثة بعد. صف مشكلتك أولاً.'
+            : 'No analysis found for this conversation yet. Describe your issue first.';
+      case 'permission_denied':
+        return isAr ? 'لا تملك صلاحية لتنفيذ هذا الإجراء.' : "You don't have permission to do this.";
+      case 'not_found':
+        return isAr ? 'العنصر المطلوب غير موجود.' : 'Not found.';
+      case 'throttled':
+        return isAr ? 'عدد كبير من الطلبات. الرجاء الانتظار قليلاً.' : 'Too many requests. Please wait a moment.';
+      case 'validation_error':
+        return (fallback != null && fallback.isNotEmpty)
+            ? fallback
+            : (isAr ? 'البيانات المدخلة غير صحيحة.' : 'The submitted data is invalid.');
+      case 'server_error':
+        return isAr
+            ? 'حدث خطأ من جانبنا. الرجاء المحاولة مرة أخرى لاحقاً.'
+            : 'Something went wrong on our end. Please try again later.';
+      default:
+        if (fallback != null && fallback.isNotEmpty) return fallback;
+        return isAr ? 'حدث خطأ. الرجاء المحاولة مجدداً' : 'Something went wrong. Please try again.';
+    }
+  }
 }
 
 extension BuildContextStrings on BuildContext {

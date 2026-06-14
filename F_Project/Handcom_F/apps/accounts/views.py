@@ -117,13 +117,19 @@ class VerifyEmailView(APIView):
 
         if not email or not otp or not role:
             return Response(
-                {'detail': 'email و otp و role مطلوبة.'},
+                {'detail': 'email و otp و role مطلوبة.', 'code': 'validation_error'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not _otp_service.verify(email, role, otp):
+        result = _otp_service.verify(email, role, otp)
+        if result == 'expired':
             return Response(
-                {'detail': 'رمز التحقق غير صحيح أو منتهي الصلاحية.'},
+                {'detail': 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.', 'code': 'otp_expired'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if result == 'invalid':
+            return Response(
+                {'detail': 'رمز التحقق غير صحيح.', 'code': 'otp_invalid'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -134,7 +140,7 @@ class VerifyEmailView(APIView):
 
         if not updated:
             return Response(
-                {'detail': 'الحساب غير موجود.'},
+                {'detail': 'الحساب غير موجود.', 'code': 'account_not_found'},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -151,7 +157,7 @@ class ResendVerificationOTPView(APIView):
 
         if not email or not role:
             return Response(
-                {'detail': 'email و role مطلوبان.'},
+                {'detail': 'email و role مطلوبان.', 'code': 'validation_error'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -163,7 +169,10 @@ class ResendVerificationOTPView(APIView):
 
         if not exists:
             return Response(
-                {'detail': 'الحساب غير موجود أو البريد الإلكتروني مفعّل مسبقاً.'},
+                {
+                    'detail': 'الحساب غير موجود أو البريد الإلكتروني مفعّل مسبقاً.',
+                    'code': 'account_not_found',
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -213,9 +222,21 @@ class PasswordResetConfirmView(APIView):
             elif ServiceProvider.objects.filter(email=email).exists():
                 role = 'service_provider'
 
-        if not role or not _otp_service.verify(email, role, otp):
+        if not role:
             return Response(
-                {'detail': 'رمز التحقق غير صحيح أو منتهي الصلاحية.'},
+                {'detail': 'الحساب غير موجود.', 'code': 'account_not_found'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        result = _otp_service.verify(email, role, otp)
+        if result == 'expired':
+            return Response(
+                {'detail': 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.', 'code': 'otp_expired'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if result == 'invalid':
+            return Response(
+                {'detail': 'رمز التحقق غير صحيح.', 'code': 'otp_invalid'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -225,14 +246,20 @@ class PasswordResetConfirmView(APIView):
                 user.set_password(new_password)
                 user.save(update_fields=['password'])
             except User.DoesNotExist:
-                return Response({'detail': 'الحساب غير موجود.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {'detail': 'الحساب غير موجود.', 'code': 'account_not_found'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
         else:
             try:
                 provider = ServiceProvider.objects.get(email=email)
                 provider.set_password(new_password)
                 provider.save(update_fields=['password'])
             except ServiceProvider.DoesNotExist:
-                return Response({'detail': 'الحساب غير موجود.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {'detail': 'الحساب غير موجود.', 'code': 'account_not_found'},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
         return Response({'detail': 'تم تغيير كلمة المرور بنجاح.'})
 

@@ -175,7 +175,11 @@ class AICreateRequestView(APIView):
         )
         if not conversation.last_analysis:
             return Response(
-                {'detail': 'No analysis found for this conversation.'},
+                {
+                    'detail': 'No analysis found for this conversation. Send a message describing '
+                              'the issue first so the assistant can analyze it.',
+                    'code': 'no_analysis_found',
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

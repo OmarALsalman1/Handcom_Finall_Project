@@ -39,7 +39,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         existing = User.objects.filter(email=value).first()
         if existing:
             if existing.is_email_verified:
-                raise serializers.ValidationError('A user with this email already exists.')
+                raise serializers.ValidationError(
+                    'A user with this email already exists.', code='email_already_exists'
+                )
             existing.delete()
         return value
 
@@ -68,7 +70,8 @@ class ServiceProviderRegistrationSerializer(serializers.Serializer):
         if existing:
             if existing.is_email_verified:
                 raise serializers.ValidationError(
-                    'A Service Provider with this email already exists.'
+                    'A Service Provider with this email already exists.',
+                    code='email_already_exists',
                 )
             existing.delete()
         return value
@@ -112,7 +115,8 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         if not self.user.is_email_verified:
             raise AuthenticationFailed(
-                'البريد الإلكتروني غير مفعّل. تحقق من صندوق البريد الوارد.'
+                'البريد الإلكتروني غير مفعّل. تحقق من صندوق البريد الوارد.',
+                code='email_not_verified',
             )
         return data
 
@@ -125,12 +129,19 @@ class ServiceProviderLoginSerializer(serializers.Serializer):
         try:
             provider = ServiceProvider.objects.get(email=data['email'])
         except ServiceProvider.DoesNotExist:
-            raise AuthenticationFailed('No active account found with the given credentials.')
+            raise AuthenticationFailed(
+                'No active account found with the given credentials.',
+                code='invalid_credentials',
+            )
         if not provider.check_password(data['password']):
-            raise AuthenticationFailed('No active account found with the given credentials.')
+            raise AuthenticationFailed(
+                'No active account found with the given credentials.',
+                code='invalid_credentials',
+            )
         if not provider.is_email_verified:
             raise AuthenticationFailed(
-                'البريد الإلكتروني غير مفعّل. تحقق من صندوق البريد الوارد.'
+                'البريد الإلكتروني غير مفعّل. تحقق من صندوق البريد الوارد.',
+                code='email_not_verified',
             )
 
         refresh = RefreshToken()

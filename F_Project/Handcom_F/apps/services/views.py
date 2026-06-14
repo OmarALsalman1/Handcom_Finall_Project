@@ -60,7 +60,7 @@ class ServiceRequestListCreateView(APIView):
     def post(self, request):
         if not (request.auth and request.auth.get('role') == 'service_user'):
             return Response(
-                {'detail': 'Only Service Users can create requests.'},
+                {'detail': 'Only Service Users can create requests.', 'code': 'permission_denied'},
                 status=status.HTTP_403_FORBIDDEN,
             )
         serializer = ServiceRequestCreateSerializer(data=request.data)
@@ -74,7 +74,10 @@ class ServiceRequestListCreateView(APIView):
             try:
                 provider = ServiceProvider.objects.get(pk=provider_id)
             except ServiceProvider.DoesNotExist:
-                provider = None
+                return Response(
+                    {'detail': 'Selected service provider was not found.', 'code': 'provider_not_found'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         # Link the chosen provider immediately so the tracking page can show
         # who the user requested, but keep status 'pending' until they accept.

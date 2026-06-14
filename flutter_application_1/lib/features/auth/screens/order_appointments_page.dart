@@ -6,6 +6,7 @@ import 'package:handcom/features/auth/screens/provider_home_page.dart';
 import 'package:handcom/shared/widgets/theme_provider.dart'; // تأكد من صحة مسار الملف في مشروعك
 
 import 'package:handcom/services/request_service.dart';
+import 'package:handcom/shared/widgets/list_error_state.dart';
 import 'chats_by_provider.dart';
 
 class OrdersAppointmentsPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class _OrdersAppointmentsPageState extends State<OrdersAppointmentsPage> {
 
   List<ServiceRequestModel> activeOrders = [];
   bool _isLoading = true;
+  String? _errorCode;
 
   @override
   void initState() {
@@ -29,10 +31,12 @@ class _OrdersAppointmentsPageState extends State<OrdersAppointmentsPage> {
   }
 
   Future<void> _loadOrders() async {
-    final orders = await RequestService.getIncomingRequests();
+    setState(() => _isLoading = true);
+    final result = await RequestService.getIncomingRequests();
     if (!mounted) return;
     setState(() {
-      activeOrders = orders;
+      activeOrders = result.items;
+      _errorCode = result.errorCode;
       _isLoading = false;
     });
   }
@@ -61,15 +65,21 @@ class _OrdersAppointmentsPageState extends State<OrdersAppointmentsPage> {
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : activeOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                              context.l10n.noIncomingOrders,
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )
+                        ? (_errorCode != null
+                            ? ListErrorState(
+                                errorCode: _errorCode,
+                                onRetry: _loadOrders,
+                                textColor: textColor,
+                              )
+                            : Center(
+                                child: Text(
+                                  context.l10n.noIncomingOrders,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ))
                         : RefreshIndicator(
                             onRefresh: _loadOrders,
                             child: ListView.builder(

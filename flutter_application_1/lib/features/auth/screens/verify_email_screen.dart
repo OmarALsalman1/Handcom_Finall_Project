@@ -85,7 +85,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     setState(() => _isVerifying = false);
 
     final activatedMsg = context.l10n.accountActivated;
-    final expiredMsg = context.l10n.codeExpiredOrInvalid;
     if (result.success) {
       messenger.showSnackBar(SnackBar(
         content: Text(activatedMsg, textAlign: TextAlign.center),
@@ -104,7 +103,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     } else {
       messenger.showSnackBar(SnackBar(
         content: Text(
-          result.error ?? expiredMsg,
+          context.l10n.errorMessage(result.errorCode, fallback: result.error),
           textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.red,
@@ -131,7 +130,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       content: Text(
         result.success
             ? context.l10n.codeSentSuccessTo(widget.email)
-            : (result.error ?? context.l10n.resendFailed),
+            : context.l10n.errorMessage(result.errorCode, fallback: result.error),
         textAlign: TextAlign.center,
       ),
       backgroundColor: result.success ? Colors.green : Colors.red,

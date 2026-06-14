@@ -68,8 +68,9 @@ class _RatingPageState extends State<RatingPage>
     setState(() => _isSubmitting = true);
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
+    final l10n = context.l10n;
 
-    final ok = await RatingService.submitRating(
+    final result = await RatingService.submitRating(
       serviceId: svcId,
       ratingValue: selectedRating,
     );
@@ -79,15 +80,18 @@ class _RatingPageState extends State<RatingPage>
 
     messenger.showSnackBar(SnackBar(
       content: Text(
-        ok ? ratingSuccess : ratingFailed,
+        result.success
+            ? ratingSuccess
+            : l10n.errorMessage(result.errorCode,
+                fallback: result.error ?? ratingFailed),
         textAlign: TextAlign.center,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      backgroundColor: ok ? Colors.green : Colors.red,
+      backgroundColor: result.success ? Colors.green : Colors.red,
       behavior: SnackBarBehavior.floating,
     ));
 
-    if (ok) navigator.pop();
+    if (result.success) navigator.pop();
   }
 
   // تم تمرير مظهر الدارك مود لتعديل لون النجوم غير المحددة تلقائياً

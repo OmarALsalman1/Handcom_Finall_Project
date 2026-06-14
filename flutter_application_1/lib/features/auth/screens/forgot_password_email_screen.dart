@@ -33,8 +33,8 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
     setState(() => _isLoading = true);
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     final email = _emailController.text.trim();
-    final sendError = context.l10n.sendError;
 
     final result = await AuthService.requestPasswordReset(email);
     if (!mounted) return;
@@ -48,7 +48,8 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
       );
     } else {
       messenger.showSnackBar(SnackBar(
-        content: Text(result.error ?? sendError,
+        content: Text(
+            l10n.errorMessage(result.errorCode, fallback: result.error),
             textAlign: TextAlign.center),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,

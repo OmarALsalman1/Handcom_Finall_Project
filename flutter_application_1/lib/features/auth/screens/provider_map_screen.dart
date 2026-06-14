@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:handcom/features/auth/screens/chats_by_provider.dart';
 import 'package:handcom/features/auth/screens/service_tracking_page.dart';
 import 'package:handcom/services/request_service.dart';
+import 'package:handcom/shared/widgets/list_error_state.dart';
 import 'provider_home_page.dart';
 import 'provider_profile_page.dart';
 
@@ -26,6 +27,7 @@ class _ProviderMapScreenState extends State<ProviderMapScreen> {
   LatLng? currentLocation;
   bool isLoading = true;
   bool _loadingOrders = true;
+  String? _ordersErrorCode;
   String errorMessage = '';
   Set<Marker> _customerMarkers = {};
   List<ServiceRequestModel> _orders = [];
@@ -75,16 +77,17 @@ class _ProviderMapScreenState extends State<ProviderMapScreen> {
 
   // ── Load orders from backend, filter active, sort by createdAt ───────────
   Future<void> _loadOrders() async {
-    final all = await RequestService.getMyRequests();
+    final result = await RequestService.getMyRequests();
     if (!mounted) return;
 
-    final active = all
+    final active = result.items
         .where((r) => _activeStatuses.contains(r.status))
         .toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt)); // earliest first
 
     setState(() {
       _orders = active;
+      _ordersErrorCode = result.errorCode;
       _loadingOrders = false;
       if (currentLocation != null) _generateCustomerMarkers();
     });
@@ -324,15 +327,25 @@ class _ProviderMapScreenState extends State<ProviderMapScreen> {
                                                         const EdgeInsets
                                                             .only(
                                                                 top: 30),
-                                                    child: Text(
-                                                      isAr
-                                                          ? 'لا توجد طلبات نشطة حالياً'
-                                                          : 'No active orders',
-                                                      style: TextStyle(
-                                                          color:
-                                                              subTextColor,
-                                                          fontSize: 15),
-                                                    ),
+                                                    child: _ordersErrorCode !=
+                                                            null
+                                                        ? ListErrorState(
+                                                            errorCode:
+                                                                _ordersErrorCode,
+                                                            onRetry:
+                                                                _loadOrders,
+                                                            textColor:
+                                                                textColor,
+                                                          )
+                                                        : Text(
+                                                            isAr
+                                                                ? 'لا توجد طلبات نشطة حالياً'
+                                                                : 'No active orders',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    subTextColor,
+                                                                fontSize: 15),
+                                                          ),
                                                   ),
                                                 const SizedBox(
                                                     height: 15),

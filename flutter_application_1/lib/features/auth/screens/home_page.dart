@@ -16,6 +16,7 @@ import 'package:handcom/providers/user_auth_provider.dart';
 import 'package:handcom/services/api_service.dart';
 import 'package:handcom/services/notification_service.dart';
 import 'package:handcom/services/request_service.dart';
+import 'package:handcom/shared/widgets/list_error_state.dart';
 import 'track_order_page.dart';
 import 'profile_page.dart';
 import 'notifications_page.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   List<ServiceRequestModel> _requests = [];
   bool _loadingRequests = true;
+  String? _requestsErrorCode;
   int _unreadCount = 0;
 
   @override
@@ -59,10 +61,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadRequests() async {
-    final requests = await RequestService.getMyRequests();
+    setState(() => _loadingRequests = true);
+    final result = await RequestService.getMyRequests();
     if (!mounted) return;
     setState(() {
-      _requests = requests;
+      _requests = result.items;
+      _requestsErrorCode = result.errorCode;
       _loadingRequests = false;
     });
   }
@@ -338,6 +342,16 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (_requests.isEmpty) {
+      if (_requestsErrorCode != null) {
+        return Padding(
+          padding: const EdgeInsets.all(30),
+          child: ListErrorState(
+            errorCode: _requestsErrorCode,
+            onRetry: _loadRequests,
+            textColor: textColor,
+          ),
+        );
+      }
       return Padding(
         padding: const EdgeInsets.all(30),
         child: Center(

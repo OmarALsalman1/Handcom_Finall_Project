@@ -5,9 +5,10 @@ import '../core/config/api_config.dart';
 class AuthResult {
   final bool success;
   final String? error;
+  final String? errorCode;
   final String? role;
 
-  AuthResult({required this.success, this.error, this.role});
+  AuthResult({required this.success, this.error, this.errorCode, this.role});
 }
 
 class AuthService {
@@ -31,9 +32,15 @@ class AuthService {
         );
         return AuthResult(success: true, role: 'service_user');
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -59,9 +66,15 @@ class AuthService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -85,9 +98,15 @@ class AuthService {
         );
         return AuthResult(success: true, role: 'service_provider');
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -131,9 +150,15 @@ class AuthService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -153,9 +178,15 @@ class AuthService {
       if (response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -171,9 +202,15 @@ class AuthService {
       if (response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -188,9 +225,15 @@ class AuthService {
       if (response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 
@@ -209,9 +252,15 @@ class AuthService {
       if (response.statusCode == 200) {
         return AuthResult(success: true);
       }
-      return AuthResult(success: false, error: ApiService.extractError(response));
+      return AuthResult(
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, errorCode: e.code);
     } catch (_) {
-      return AuthResult(success: false, error: 'تعذّر الاتصال بالخادم');
+      return AuthResult(success: false, errorCode: 'server_error');
     }
   }
 

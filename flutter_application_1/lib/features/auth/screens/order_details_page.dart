@@ -416,7 +416,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     final locationMsg = context.l10n.orderLocationRequired;
     final timeMsg = context.l10n.orderTimeRequired;
     final successMsg = context.l10n.orderSentSuccess;
-    final failedMsg = context.l10n.orderSentFailed;
+    final l10n = context.l10n;
 
     if (_pickedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -463,7 +463,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       );
     } else {
       messenger.showSnackBar(SnackBar(
-        content: Text(result.error ?? failedMsg, textAlign: TextAlign.center),
+        content: Text(
+            l10n.errorMessage(result.errorCode, fallback: result.error),
+            textAlign: TextAlign.center),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));

@@ -106,7 +106,8 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     });
     _scrollToBottom();
 
-    final lang = context.l10n.isAr ? 'ar' : 'en';
+    final l10n = context.l10n;
+    final lang = l10n.isAr ? 'ar' : 'en';
     final response = await AiService.sendMessage(
       text: text.isNotEmpty ? text : null,
       image: image,
@@ -121,12 +122,13 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
       if (response.success) {
         _activeConversationId = response.conversationId;
         _messages.add(_AiMsg(
-          response.aiMessage ?? (context.l10n.isAr ? 'فهمت مشكلتك، دعني أساعدك.' : 'Got it, let me help you.'),
+          response.aiMessage ?? (l10n.isAr ? 'فهمت مشكلتك، دعني أساعدك.' : 'Got it, let me help you.'),
           providers: response.providers,
           conversationId: response.conversationId,
         ));
       } else {
-        _messages.add(_AiMsg(context.l10n.aiConnError));
+        _messages.add(_AiMsg(
+            l10n.errorMessage(response.errorCode, fallback: response.error)));
       }
     });
     _scrollToBottom();
@@ -258,14 +260,15 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
   Future<void> _submitRequest(
       AiProviderSuggestion provider, String location, int? convId) async {
     final messenger = ScaffoldMessenger.of(context);
-    final requestFailedMsg = context.l10n.requestFailed;
+    final l10n = context.l10n;
 
     setState(() => _messages.add(_TypingMsg()));
     _scrollToBottom();
 
-    bool ok = false;
+    ({bool success, String? error, String? errorCode}) result =
+        (success: false, error: null, errorCode: null);
     if (convId != null) {
-      ok = await AiService.createRequestFromChat(
+      result = await AiService.createRequestFromChat(
         conversationId: convId,
         location: location,
         providerId: provider.id,
@@ -275,14 +278,14 @@ class _AiAssistantPageState extends State<AiAssistantPage> {
     if (!mounted) return;
     setState(() => _messages.removeWhere((m) => m is _TypingMsg));
 
-    if (ok) {
+    if (result.success) {
       setState(() {
         _messages.add(_AiMsg(context.l10n.requestSentSuccess));
       });
       _scrollToBottom();
     } else {
       messenger.showSnackBar(SnackBar(
-        content: Text(requestFailedMsg,
+        content: Text(l10n.errorMessage(result.errorCode, fallback: result.error),
             textAlign: TextAlign.center),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,

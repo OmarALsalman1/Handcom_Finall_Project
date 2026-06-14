@@ -77,6 +77,7 @@ class AiChatResponse {
   final String? serviceCategory;
   final List<AiProviderSuggestion> providers;
   final String? error;
+  final String? errorCode;
 
   AiChatResponse({
     required this.success,
@@ -86,6 +87,7 @@ class AiChatResponse {
     this.serviceCategory,
     this.providers = const [],
     this.error,
+    this.errorCode,
   });
 }
 
@@ -134,13 +136,20 @@ class AiService {
         );
       }
       return AiChatResponse(
-          success: false, error: ApiService.extractError(response));
-    } catch (_) {
-      return AiChatResponse(success: false, error: 'تعذّر الاتصال بالخادم');
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return AiChatResponse(success: false, errorCode: e.code);
+    } catch (e) {
+      return AiChatResponse(
+          success: false, error: e.toString(), errorCode: 'server_error');
     }
   }
 
-  static Future<bool> createRequestFromChat({
+  static Future<({bool success, String? error, String? errorCode})>
+      createRequestFromChat({
     required int conversationId,
     required String location,
     int? providerId,
@@ -155,9 +164,18 @@ class AiService {
       final response = await ApiService.post(
           ApiConfig.aiCreateRequest, body,
           authenticated: true);
-      return response.statusCode == 201;
-    } catch (_) {
-      return false;
+      if (response.statusCode == 201) {
+        return (success: true, error: null, errorCode: null);
+      }
+      return (
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return (success: false, error: null, errorCode: e.code);
+    } catch (e) {
+      return (success: false, error: e.toString(), errorCode: 'server_error');
     }
   }
 }

@@ -5,6 +5,7 @@ import 'package:handcom/services/notification_service.dart';
 import 'package:handcom/features/auth/screens/provider_map_screen.dart';
 import 'package:handcom/features/auth/screens/provider_home_page.dart';
 import 'package:handcom/core/l10n/app_strings.dart';
+import 'package:handcom/shared/widgets/list_error_state.dart';
 import 'chats_by_provider.dart';
 import 'chat_page.dart';
 import 'service_tracking_page.dart';
@@ -25,6 +26,7 @@ class _NotificationsProviderPageState
 
   List<NotificationModel> _notifications = [];
   bool _isLoading = true;
+  String? _errorCode;
 
   @override
   void initState() {
@@ -33,10 +35,12 @@ class _NotificationsProviderPageState
   }
 
   Future<void> _load() async {
-    final list = await NotificationService.getNotifications();
+    setState(() => _isLoading = true);
+    final result = await NotificationService.getNotifications();
     if (!mounted) return;
     setState(() {
-      _notifications = list;
+      _notifications = result.items;
+      _errorCode = result.errorCode;
       _isLoading = false;
     });
   }
@@ -83,11 +87,17 @@ class _NotificationsProviderPageState
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _notifications.isEmpty
-                        ? Center(
-                            child: Text(context.l10n.noNotifications,
-                                style: TextStyle(
-                                    color: subTextColor, fontSize: 16)),
-                          )
+                        ? (_errorCode != null
+                            ? ListErrorState(
+                                errorCode: _errorCode,
+                                onRetry: _load,
+                                textColor: textColor,
+                              )
+                            : Center(
+                                child: Text(context.l10n.noNotifications,
+                                    style: TextStyle(
+                                        color: subTextColor, fontSize: 16)),
+                              ))
                         : RefreshIndicator(
                             onRefresh: _load,
                             child: ListView.builder(

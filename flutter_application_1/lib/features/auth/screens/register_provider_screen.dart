@@ -285,7 +285,7 @@ class _RegisterProviderScreenState extends State<RegisterProviderScreen> {
                                           setState(() => _isLoading = true);
                                           final navigator = Navigator.of(context);
                                           final messenger = ScaffoldMessenger.of(context);
-                                          final registerFailedMsg = context.l10n.registerFailed;
+                                          final l10n = context.l10n;
                                           final email = _emailController.text.trim();
                                           final result =
                                               await AuthService.registerProvider(
@@ -312,7 +312,7 @@ class _RegisterProviderScreenState extends State<RegisterProviderScreen> {
                                           } else {
                                             messenger.showSnackBar(SnackBar(
                                               content: Text(
-                                                result.error ?? registerFailedMsg,
+                                                l10n.errorMessage(result.errorCode, fallback: result.error),
                                                 textAlign: TextAlign.right,
                                               ),
                                               backgroundColor: Colors.red,

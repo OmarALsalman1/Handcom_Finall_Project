@@ -237,7 +237,7 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
                                       final authProvider = context.read<UserAuthProvider>();
                                       final navigator = Navigator.of(context);
                                       final messenger = ScaffoldMessenger.of(context);
-                                      final loginErrorMsg = context.l10n.loginError;
+                                      final l10n = context.l10n;
 
                                       final result =
                                           await AuthService.loginProvider(
@@ -263,7 +263,7 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
                                       } else {
                                         messenger.showSnackBar(SnackBar(
                                           content: Text(
-                                            result.error ?? loginErrorMsg,
+                                            l10n.errorMessage(result.errorCode, fallback: result.error),
                                             textAlign: TextAlign.right,
                                           ),
                                           backgroundColor: Colors.red,

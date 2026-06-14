@@ -52,7 +52,8 @@ class ServiceRequestService:
         ).exists():
             raise ValidationError(
                 'This provider already has a request scheduled within '
-                '2 hours of that time. Please choose a different time.'
+                '2 hours of that time. Please choose a different time.',
+                code='schedule_conflict',
             )
 
     # ── Expiry ────────────────────────────────────────────────────────────────

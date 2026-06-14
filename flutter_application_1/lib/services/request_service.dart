@@ -90,33 +90,43 @@ class ServiceRequestModel {
 }
 
 class RequestService {
-  static Future<List<ServiceRequestModel>> getMyRequests() async {
+  static Future<ListResult<ServiceRequestModel>> getMyRequests() async {
     try {
       final response = await ApiService.get(ApiConfig.serviceRequests);
       if (response.statusCode == 200) {
         final decoded = jsonDecode(utf8.decode(response.bodyBytes));
         final List<dynamic> data =
             decoded is Map ? (decoded['results'] ?? []) : decoded as List;
-        return data.map((e) => ServiceRequestModel.fromJson(e)).toList();
+        return ListResult.success(
+            data.map((e) => ServiceRequestModel.fromJson(e)).toList());
       }
-    } catch (_) {}
-    return [];
+      return ListResult.failure(ApiService.extractErrorCode(response));
+    } on ApiException catch (e) {
+      return ListResult.failure(e.code);
+    } catch (_) {
+      return const ListResult.failure('server_error');
+    }
   }
 
-  static Future<List<ServiceRequestModel>> getIncomingRequests() async {
+  static Future<ListResult<ServiceRequestModel>> getIncomingRequests() async {
     try {
       final response = await ApiService.get('${ApiConfig.serviceRequests}?incoming=true');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(utf8.decode(response.bodyBytes));
         final List<dynamic> data =
             decoded is Map ? (decoded['results'] ?? []) : decoded as List;
-        return data.map((e) => ServiceRequestModel.fromJson(e)).toList();
+        return ListResult.success(
+            data.map((e) => ServiceRequestModel.fromJson(e)).toList());
       }
-    } catch (_) {}
-    return [];
+      return ListResult.failure(ApiService.extractErrorCode(response));
+    } on ApiException catch (e) {
+      return ListResult.failure(e.code);
+    } catch (_) {
+      return const ListResult.failure('server_error');
+    }
   }
 
-  static Future<({ServiceRequestModel? model, String? error})> createRequest({
+  static Future<({ServiceRequestModel? model, String? error, String? errorCode})> createRequest({
     required String serviceType,
     required String location,
     required String description,
@@ -142,11 +152,18 @@ class RequestService {
           model: ServiceRequestModel.fromJson(
               jsonDecode(utf8.decode(response.bodyBytes))),
           error: null,
+          errorCode: null,
         );
       }
-      return (model: null, error: '[${response.statusCode}] ${ApiService.extractError(response)}');
+      return (
+        model: null,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return (model: null, error: null, errorCode: e.code);
     } catch (e) {
-      return (model: null, error: e.toString());
+      return (model: null, error: e.toString(), errorCode: 'server_error');
     }
   }
 

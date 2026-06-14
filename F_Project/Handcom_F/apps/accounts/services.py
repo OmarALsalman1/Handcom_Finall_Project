@@ -4,7 +4,14 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
 from django.conf import settings
+from rest_framework.exceptions import APIException
 from .models import PasswordResetOTP
+
+
+class EmailDeliveryError(APIException):
+    status_code = 503
+    default_detail = 'Could not send the verification email. Please try again later.'
+    default_code = 'email_send_failed'
 
 
 class OTPService:
@@ -23,17 +30,19 @@ class OTPService:
         self._send_email(email, code, purpose)
         return code
 
-    def verify(self, email: str, role: str, code: str) -> bool:
+    def verify(self, email: str, role: str, code: str) -> str:
+        """Returns 'ok', 'expired', or 'invalid'."""
         try:
             otp = PasswordResetOTP.objects.get(
-                email=email, role=role, code=code,
-                is_used=False, expires_at__gt=timezone.now(),
+                email=email, role=role, code=code, is_used=False,
             )
-            otp.is_used = True
-            otp.save(update_fields=['is_used'])
-            return True
         except PasswordResetOTP.DoesNotExist:
-            return False
+            return 'invalid'
+        if otp.expires_at <= timezone.now():
+            return 'expired'
+        otp.is_used = True
+        otp.save(update_fields=['is_used'])
+        return 'ok'
 
     @staticmethod
     def _send_email(email: str, code: str, purpose: str) -> None:
@@ -44,7 +53,7 @@ class OTPService:
                 f'شكراً لتسجيلك في Handcom.\n\n'
                 f'رمز التحقق لتفعيل حسابك:\n\n'
                 f'    {code}\n\n'
-                f'الرمز صالح لمدة 30 ثانية فقط.\n'
+                f'الرمز صالح لمدة 5 دقائق.\n'
                 f'لا تشارك هذا الرمز مع أي شخص.\n\n'
                 f'إذا لم تقم بالتسجيل في Handcom، يرجى تجاهل هذا البريد.\n\n'
                 f'فريق Handcom'
@@ -55,7 +64,7 @@ class OTPService:
                 f'مرحباً!\n\n'
                 f'رمز إعادة تعيين كلمة المرور الخاص بك:\n\n'
                 f'    {code}\n\n'
-                f'الرمز صالح لمدة 30 ثانية فقط.\n'
+                f'الرمز صالح لمدة 5 دقائق.\n'
                 f'لا تشارك هذا الرمز مع أي شخص.\n\n'
                 f'إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد.\n\n'
                 f'فريق Handcom'
@@ -76,6 +85,6 @@ class OTPService:
                 fail_silently=False,
             )
         except Exception as exc:
-            # Log but don't crash — OTP is still saved in DB
             print(f'[EMAIL ERROR] Failed to send to {email}: {exc}')
             print(f'[OTP FALLBACK] Code: {code}')
+            raise EmailDeliveryError()

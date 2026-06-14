@@ -3,7 +3,7 @@ import 'api_service.dart';
 import '../core/config/api_config.dart';
 
 class RatingService {
-  static Future<bool> submitRating({
+  static Future<({bool success, String? error, String? errorCode})> submitRating({
     required int serviceId,
     required int ratingValue,
     String? comment,
@@ -22,9 +22,18 @@ class RatingService {
         body,
         authenticated: true,
       );
-      return response.statusCode == 201;
-    } catch (_) {
-      return false;
+      if (response.statusCode == 201) {
+        return (success: true, error: null, errorCode: null);
+      }
+      return (
+        success: false,
+        error: ApiService.extractError(response),
+        errorCode: ApiService.extractErrorCode(response),
+      );
+    } on ApiException catch (e) {
+      return (success: false, error: null, errorCode: e.code);
+    } catch (e) {
+      return (success: false, error: e.toString(), errorCode: 'server_error');
     }
   }
 

@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -15,6 +17,7 @@ from .serializers import ConversationSerializer, MessageSerializer, MessageCreat
 from .services import ConversationService
 
 _conv_service = ConversationService()
+logger = logging.getLogger(__name__)
 
 
 def _get_role(request):
@@ -202,6 +205,9 @@ class MessageCreateView(APIView):
                     related_conversation_id=conv.conversation_id,
                 )
         except Exception:
-            pass
+            logger.warning(
+                'Failed to send new-message notification for conversation %s',
+                conv.conversation_id, exc_info=True,
+            )
 
         return Response(MessageSerializer(message).data, status=status.HTTP_201_CREATED)

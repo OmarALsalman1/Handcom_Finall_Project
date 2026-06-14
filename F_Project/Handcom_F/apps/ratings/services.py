@@ -18,27 +18,33 @@ class RatingService:
                 'service_request__user', 'service_provider'
             ).get(pk=service_id)
         except Service.DoesNotExist:
-            raise ValidationError('Service not found.')
+            raise ValidationError('Service not found.', code='service_not_found')
 
         # Rule 1 — rating gate: request must be completed
         if service.service_request.current_status != 'completed':
-            raise ValidationError('You can only rate a completed service.')
+            raise ValidationError(
+                'You can only rate a completed service.', code='service_not_completed'
+            )
 
         # Rule 3 — ownership: only the original requester can rate
         if service.service_request.user != user:
-            raise PermissionDenied('You can only rate services you originally requested.')
+            raise PermissionDenied(
+                'You can only rate services you originally requested.',
+                code='not_service_owner',
+            )
 
         # Rule 4 — time window: within 30 days of service_date
         deadline = service.service_date + timedelta(days=RATING_WINDOW_DAYS)
         if timezone.now().date() > deadline:
             raise ValidationError(
                 f'Rating window has expired '
-                f'({RATING_WINDOW_DAYS} days from the service completion date).'
+                f'({RATING_WINDOW_DAYS} days from the service completion date).',
+                code='rating_window_expired',
             )
 
         # Rule 2 — one rating per service per user
         if Rating.objects.filter(user=user, service=service).exists():
-            raise ValidationError('You have already rated this service.')
+            raise ValidationError('You have already rated this service.', code='already_rated')
 
         return Rating.objects.create(
             user=user,

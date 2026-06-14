@@ -80,17 +80,22 @@ class NotificationModel {
 }
 
 class NotificationService {
-  static Future<List<NotificationModel>> getNotifications() async {
+  static Future<ListResult<NotificationModel>> getNotifications() async {
     try {
       final response = await ApiService.get(ApiConfig.notifications);
       if (response.statusCode == 200) {
         final decoded = jsonDecode(utf8.decode(response.bodyBytes));
         final List<dynamic> data =
             decoded is Map ? (decoded['results'] ?? []) : decoded as List;
-        return data.map((e) => NotificationModel.fromJson(e)).toList();
+        return ListResult.success(
+            data.map((e) => NotificationModel.fromJson(e)).toList());
       }
-    } catch (_) {}
-    return [];
+      return ListResult.failure(ApiService.extractErrorCode(response));
+    } on ApiException catch (e) {
+      return ListResult.failure(e.code);
+    } catch (_) {
+      return const ListResult.failure('server_error');
+    }
   }
 
   static Future<void> markAllRead() async {
