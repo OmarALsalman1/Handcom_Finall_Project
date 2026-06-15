@@ -199,6 +199,96 @@ class AppStrings {
   String get notificationsToggle => isAr ? 'الاشعارات' : 'Notifications';
   String get language => isAr ? 'اللغة' : 'Language';
 
+  // ── Settings: legal & support ────────────────────────────────────────────
+  String get termsOfUse => isAr ? 'شروط الاستخدام' : 'Terms of Use';
+  String get technicalSupport => isAr ? 'دعم فني' : 'Technical Support';
+  String get supportIntro => isAr
+      ? 'لأي استفسار أو مشكلة تقنية أو ملاحظة، تواصل معنا عبر البريد الإلكتروني التالي:'
+      : 'For any question, technical issue, or feedback, reach us at the email below:';
+  String get sendEmail => isAr ? 'إرسال بريد إلكتروني' : 'Send Email';
+  String get copyEmail => isAr ? 'نسخ البريد الإلكتروني' : 'Copy Email';
+  String get emailCopied =>
+      isAr ? 'تم نسخ البريد الإلكتروني' : 'Email copied to clipboard';
+  String get couldNotOpenEmailApp =>
+      isAr ? 'تعذّر فتح تطبيق البريد الإلكتروني' : 'Could not open the email app';
+  String get termsOfUseContent => isAr ? _termsOfUseAr : _termsOfUseEn;
+
+  static const String _termsOfUseAr = '''
+مرحباً بك في تطبيق Handcom. يرجى قراءة شروط الاستخدام التالية بعناية، فاستخدامك للتطبيق يعني موافقتك الكاملة عليها.
+
+1. وصف الخدمة
+يوفر تطبيق Handcom منصة تربط بين مستخدمي الخدمة ومزودي خدمات الصيانة المنزلية (سباكة، كهرباء، نجارة، ودهان) لتسهيل طلب الخدمات وتتبعها والتواصل بشأنها وتقييمها.
+
+2. إنشاء الحساب
+- يجب تقديم بيانات صحيحة ودقيقة عند التسجيل، وتفعيل البريد الإلكتروني عبر رمز التحقق (OTP) المرسل إليك.
+- يتحمل المستخدم مسؤولية الحفاظ على سرية بيانات حسابه وعدم مشاركتها مع أي طرف آخر.
+
+3. مسؤوليات مستخدم الخدمة
+- تقديم وصف واضح ودقيق للخدمة المطلوبة وموقعها والوقت المناسب لها.
+- الالتزام بالمواعيد المتفق عليها مع مزود الخدمة، وإلغاء الطلب مسبقاً في حال تعذر الحضور.
+- تقييم الخدمة بصدق وموضوعية بعد اكتمالها.
+
+4. مسؤوليات مزود الخدمة
+- تقديم معلومات صحيحة عن المهارات والخبرة وحالة التوفر.
+- الالتزام بالمواعيد المتفق عليها، وعدم قبول طلبات تتعارض زمنياً مع طلبات أخرى مؤكدة.
+- تقديم الخدمة بجودة ومهنية مناسبة، والتعامل بأخلاق مع المستخدمين.
+
+5. السلوك والمحتوى
+يُمنع استخدام التطبيق لأي غرض غير قانوني، أو إرسال محتوى مسيء أو مضايق أو احتيالي عبر المحادثات أو التقييمات.
+
+6. التقييمات
+يجب أن تعكس التقييمات تجربة فعلية وصادقة، ويحتفظ التطبيق بالحق في إزالة أي تقييم مخالف أو مسيء.
+
+7. تعليق أو إيقاف الحساب
+يحتفظ Handcom بالحق في تعليق أو إيقاف أي حساب يخالف هذه الشروط أو يُستخدم بطريقة تضر بالمستخدمين الآخرين أو بالمنصة.
+
+8. حدود المسؤولية
+يعمل التطبيق كوسيط لتسهيل التواصل بين الطرفين، ولا يتحمل مسؤولية مباشرة عن جودة الخدمة المقدمة من مزود الخدمة، لكنه يلتزم بمتابعة الشكاوى لتحسين جودة المنصة.
+
+9. التعديلات على الشروط
+قد تُحدَّث هذه الشروط من وقت لآخر، واستمرارك في استخدام التطبيق بعد أي تحديث يُعد موافقة عليها.
+
+10. التواصل
+لأي استفسار بخصوص هذه الشروط، يمكنك التواصل معنا عبر "دعم فني" من الإعدادات.''';
+
+  static const String _termsOfUseEn = '''
+Welcome to Handcom. Please read these Terms of Use carefully — by using the app, you agree to be bound by them.
+
+1. Service Description
+Handcom is a platform that connects service users with home-maintenance service providers (plumbing, electrical, carpentry, and painting), making it easy to request, track, discuss, and rate services.
+
+2. Account Creation
+- You must provide accurate information when registering and verify your email using the OTP code sent to you.
+- You are responsible for keeping your account credentials confidential and not sharing them with anyone else.
+
+3. Responsibilities of Service Users
+- Provide a clear and accurate description of the requested service, its location, and the preferred time.
+- Honor scheduled appointments with the service provider, and cancel in advance if you can't attend.
+- Rate the completed service honestly and fairly.
+
+4. Responsibilities of Service Providers
+- Provide accurate information about your skills, experience, and availability.
+- Honor scheduled appointments, and do not accept requests that conflict with other confirmed bookings.
+- Deliver services with appropriate quality and professionalism, and treat users respectfully.
+
+5. Conduct and Content
+You may not use the app for any unlawful purpose, or send abusive, harassing, or fraudulent content through chats or ratings.
+
+6. Ratings
+Ratings must reflect a genuine, honest experience. Handcom reserves the right to remove any rating that violates these terms or is abusive.
+
+7. Account Suspension
+Handcom reserves the right to suspend or terminate any account that violates these terms or harms other users or the platform.
+
+8. Limitation of Liability
+The app acts as an intermediary to facilitate communication between users and providers, and is not directly responsible for the quality of services delivered by providers, though complaints are reviewed to improve platform quality.
+
+9. Changes to These Terms
+These terms may be updated from time to time. Continued use of the app after an update constitutes acceptance of the changes.
+
+10. Contact
+For any questions about these terms, please reach us via "Technical Support" in Settings.''';
+
   // ── Order appointments ─────────────────────────────────────────────────────
   String get orderAppointments => isAr ? 'موعد الطلبات' : 'Order Appointments';
   String get noIncomingOrders => isAr ? 'لا يوجد طلبات واردة حالياً' : 'No incoming orders';

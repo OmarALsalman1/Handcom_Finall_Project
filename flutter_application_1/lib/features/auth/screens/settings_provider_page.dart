@@ -4,6 +4,8 @@ import 'package:handcom/shared/widgets/theme_provider.dart';
 import 'package:handcom/shared/widgets/locale_provider.dart';
 import 'package:handcom/providers/user_auth_provider.dart';
 import 'package:handcom/features/auth/screens/user_type_screen.dart';
+import 'package:handcom/features/auth/screens/terms_of_use_page.dart';
+import 'package:handcom/features/auth/screens/support_page.dart';
 import 'provider_profile_page.dart';
 
 class SettingsProviderPage extends StatefulWidget {
@@ -192,6 +194,22 @@ class _SettingsProviderPageState extends State<SettingsProviderPage> {
           ),
           const Divider(height: 30, thickness: 1),
           _buildLanguageRow(localeProvider, textColor, isAr),
+          const Divider(height: 30, thickness: 1),
+          _buildNavRow(
+            isAr ? "شروط الاستخدام" : "Terms of Use",
+            Icons.description_outlined,
+            textColor,
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const TermsOfUsePage())),
+          ),
+          const Divider(height: 30, thickness: 1),
+          _buildNavRow(
+            isAr ? "دعم فني" : "Technical Support",
+            Icons.support_agent_outlined,
+            textColor,
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SupportPage())),
+          ),
         ],
       ),
     );
@@ -262,6 +280,25 @@ class _SettingsProviderPageState extends State<SettingsProviderPage> {
         const SizedBox(width: 10),
         Icon(icon, color: textColor.withValues(alpha: 0.8)),
       ],
+    );
+  }
+
+  Widget _buildNavRow(
+      String title, IconData icon, Color textColor, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(Icons.arrow_back_ios,
+              size: 16, color: textColor.withValues(alpha: 0.4)),
+          const Spacer(),
+          Text(title,
+              style: TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+          const SizedBox(width: 10),
+          Icon(icon, color: textColor.withValues(alpha: 0.8)),
+        ],
+      ),
     );
   }
 
