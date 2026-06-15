@@ -99,7 +99,9 @@ class _PaintWorkersPageState extends State<PaintWorkersPage> {
     try {
       final res = await ApiService.get(ApiConfig.savedProviders);
       if (res.statusCode == 200) {
-        final List data = jsonDecode(utf8.decode(res.bodyBytes));
+        final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+        final List data =
+            decoded is Map ? (decoded['results'] ?? []) : decoded as List;
         return data
             .map((e) => (e['service_provider']?['service_provider_id'] as int?) ?? 0)
             .where((id) => id != 0)
