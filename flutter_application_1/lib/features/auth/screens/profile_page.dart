@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:handcom/features/auth/screens/ai_assistant_page.dart';
 import 'package:handcom/features/auth/screens/map_screen.dart';
 import 'package:handcom/features/auth/screens/settings_user_page.dart';
-import 'package:handcom/features/auth/screens/user_type_screen.dart';
 import 'package:handcom/providers/user_auth_provider.dart';
 import 'package:handcom/services/api_service.dart';
 import 'package:handcom/core/config/api_config.dart';
@@ -101,22 +100,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   isDark: isDark,
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const FavoriteOptionsPage())),
-                ),
-                _buildMenuOption(
-                  title: context.l10n.logout,
-                  icon: Icons.logout,
-                  cardBg: cardBg,
-                  textColor: Colors.red,
-                  isDark: isDark,
-                  onTap: () async {
-                    await context.read<UserAuthProvider>().logout();
-                    if (!context.mounted) return;
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const UserTypeScreen()),
-                      (_) => false,
-                    );
-                  },
                 ),
                 const SizedBox(height: 20),
               ],
