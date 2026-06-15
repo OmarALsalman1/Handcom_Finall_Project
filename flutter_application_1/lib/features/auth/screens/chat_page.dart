@@ -321,6 +321,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context, Color appBarBg, bool isDark) {
+    final isServiceUser = context.read<UserAuthProvider>().isServiceUser;
     return PreferredSize(
       preferredSize: const Size.fromHeight(90),
       child: AppBar(
@@ -343,40 +344,42 @@ class _ChatPageState extends State<ChatPage> {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OrderDetailsPage(
-                          providerId: widget.providerId,
-                          providerName: widget.partnerName,
-                          providerInitial: widget.partnerName.isNotEmpty
-                              ? widget.partnerName.substring(0, 1)
-                              : '؟',
-                          serviceType: widget.serviceType,
+                if (isServiceUser) ...[
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderDetailsPage(
+                            providerId: widget.providerId,
+                            providerName: widget.partnerName,
+                            providerInitial: widget.partnerName.isNotEmpty
+                                ? widget.partnerName.substring(0, 1)
+                                : '؟',
+                            serviceType: widget.serviceType,
+                          ),
                         ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFB4C1D9),
+                        borderRadius: BorderRadius.circular(25),
+                        border: isDark ? Border.all(color: Colors.white10) : null,
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFB4C1D9),
-                      borderRadius: BorderRadius.circular(25),
-                      border: isDark ? Border.all(color: Colors.white10) : null,
-                    ),
-                    child: Text(
-                      context.l10n.requestAction,
-                      style: TextStyle(
-                        color: isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      child: Text(
+                        context.l10n.requestAction,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const Spacer(),
+                  const Spacer(),
+                ],
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
